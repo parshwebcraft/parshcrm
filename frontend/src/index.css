@@ -16,6 +16,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#emergent-badge,
+a[href*="emergent.sh"],
+a[href*="emergentagent.com"],
+script[src*="emergent.sh"],
+script[src*="emergentagent.com"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 .font-display {
   font-family: "Cabinet Grotesk", "IBM Plex Sans", sans-serif;
   letter-spacing: -0.02em;
