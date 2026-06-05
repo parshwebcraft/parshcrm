@@ -31,15 +31,15 @@
         <script>
           if ("serviceWorker" in navigator) {
             window.addEventListener("load", () => {
-              const isLocalhost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
-              if (isLocalhost) {
-                navigator.serviceWorker.getRegistrations()
-                  .then((registrations) => registrations.forEach((registration) => registration.unregister()))
-                  .catch(() => {});
-              } else {
-                navigator.serviceWorker.register("/service-worker.js").catch(() => {});
-              }
+              navigator.serviceWorker.getRegistrations()
+                .then((registrations) => registrations.forEach((registration) => registration.unregister()))
+                .catch(() => {});
             });
+          }
+          if ("caches" in window) {
+            caches.keys()
+              .then((keys) => keys.forEach((key) => caches.delete(key)))
+              .catch(() => {});
           }
         </script>
         <!--
