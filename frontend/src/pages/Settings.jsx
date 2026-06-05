@@ -71,7 +71,7 @@ export default function Settings() {
           {[
             ["whatsapp_api", "WhatsApp Business API token"],
             ["calling_api", "Calling API key (Twilio / Exotel / Knowlarity)"],
-            ["openai_api", "OpenAI API key (overrides Emergent key)"],
+            ["openai_api", "OpenAI API key for AI summaries"],
           ].map(([k, l]) => (
             <label key={k} className="flex flex-col gap-1">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">{l}</span>
