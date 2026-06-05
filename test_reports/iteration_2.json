@@ -1,0 +1,48 @@
+{
+  "summary": "Iteration 2 testing complete. Backend: 33/33 pytest passing (26 from iter-1 + 7 new for CSV import, documents object-storage, employee stats). Frontend: CSV import flow works end-to-end (download sample, upload, result toast, lead appears in list). Employee detail page works (KPIs, sections, back nav). REGRESSIONS OK across dashboard/pipeline/tasks/reports/whatsapp/settings. ONE CRITICAL FRONTEND BUG: Documents tab is unreachable on Lead Detail — TabsContent value='documents' is rendered but the matching TabsTrigger button is missing from TabsList, so users cannot click into the Documents tab. Underlying APIs all verified.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "LeadDetail.jsx",
+        "issue": "Documents tab trigger missing. TabsList (lines ~130-136) only renders triggers for overview/timeline/calls/whatsapp/tasks. The <TabsContent value='documents'><LeadDocuments .../></TabsContent> at line 272 is unreachable because no <TabsTrigger value='documents' data-testid='tab-documents'>Documents</TabsTrigger> exists. Add one TabsTrigger line.",
+        "selector": "[data-testid='tab-documents']",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/backend/tests/test_iteration2.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Add <TabsTrigger value='documents' data-testid='tab-documents'>Documents</TabsTrigger> inside the TabsList in /app/frontend/src/pages/LeadDetail.jsx (around line 135, right after the Tasks trigger). The TabsContent and LeadDocuments component are already wired — only the trigger button is missing."
+  ],
+  "critical_code_review_comments": [
+    "server.py is now ~1010 lines after iter-2 additions. Strongly recommend splitting into routers (leads.py, documents.py, employees.py, calls.py, etc.) before next iteration — the file is past the 700-line guideline.",
+    "GET /api/leads/{lead_id}/documents enriches each doc with uploader_name via N+1 queries to db.users. For a lead with many docs this is O(N). Consider a single $lookup aggregation or batched fetch.",
+    "GET /api/employees/{emp_id}/stats also issues an N+1 lookup for lead_name/company per recent_activity entry. Same recommendation: batch or $lookup.",
+    "/api/documents/{doc_id}/download accepts ?auth=<jwt> in the query string. Tokens in URLs can leak via referrer headers / browser history / proxy logs. Consider short-lived signed URLs from object storage, or POST-based download instead.",
+    "MAX_DOC_BYTES = 15MB is enforced after the entire file is read into memory (await file.read()). For very large rejects, this still loads up to the full body. Consider streaming + Content-Length check.",
+    "CSV importer always sets assigned_to=user['id'] and ignores any 'assigned_to' column in the CSV (the column is not even in CSV_FIELDS but should be documented). Either drop the constant CSV_FIELDS list (it is declared but never used) or honor 'assigned_to' from the CSV."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration2.py (new — 7 tests for CSV import, documents CRUD + auth, employee stats shape + 404)"
+  ],
+  "success_rate": {
+    "backend": "100% (33/33 pytest)",
+    "frontend": "~85% — CSV import flow + employee detail + regressions all OK; Documents tab inaccessible due to missing TabsTrigger"
+  },
+  "test_credentials": "admin@facetscrm.com / password123 — working.",
+  "seed_data_creation": "Used existing seeded leads/employees. Test leads prefixed TEST_Imp_ and FE_Imp_ were cleaned up after import test.",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend regression suite: pytest /app/backend/tests/ -v (33 tests, ~11s). For the Documents tab, once the missing TabsTrigger is added, retest via Playwright: click [data-testid='tab-documents'], then upload via [data-testid='lead-doc-file-input'] (auto-uploads), verify file appears, click delete. Object storage upload+download confirmed working via backend pytest (test_upload_list_download_delete).",
+  "rca of the issue": "Documents tab unreachable: developer added <TabsContent value='documents'> at LeadDetail.jsx:272 and imported LeadDocuments at line 20, but forgot to add a corresponding <TabsTrigger value='documents'> inside <TabsList> (lines 130-136). Radix Tabs only switches to a content panel when its trigger is clicked, so the Documents UI is rendered into the DOM tree but never displayed. Fix: add one line — <TabsTrigger value='documents' data-testid='tab-documents'>Documents</TabsTrigger> — after the Tasks trigger. Reproduction: log in → open any lead → only 5 tabs visible (Overview/Timeline/Calls/WhatsApp/Tasks). Expected: 6 tabs including Documents."
+}

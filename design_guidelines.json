@@ -1,0 +1,134 @@
+{
+  "theme_archetype": {
+    "domain": "B2B SaaS CRM",
+    "theme": "Light",
+    "archetype": "4 (Swiss & High-Contrast)",
+    "rationale": "Authority, clarity, and function-first. A professional CRM needs high data density and contrast. We use a crisp white canvas with a commanding Dark Navy for structure, and stark functional colors for data status.",
+    "persona_twist": "Avoiding soft borders and muddy grays. Using crisp 1px borders, subtle layered shadows, and a highly legible, character-rich font pairing to kill the generic SaaS look."
+  },
+  "typography": {
+    "anti_default_rule": true,
+    "heading_font": "Cabinet Grotesk",
+    "body_font": "IBM Plex Sans",
+    "mono_font": "JetBrains Mono",
+    "scales": {
+      "h1": "text-4xl sm:text-5xl font-black tracking-tight leading-none",
+      "h2": "text-2xl sm:text-3xl font-bold tracking-tight",
+      "h3": "text-xl font-semibold tracking-tight",
+      "h4": "text-lg font-medium tracking-tight",
+      "body": "text-sm sm:text-base font-normal leading-relaxed",
+      "small_label": "text-xs font-semibold uppercase tracking-[0.15em] text-slate-500"
+    }
+  },
+  "color_palette": {
+    "base": {
+      "page_bg": "#FAFAFA",
+      "surface_bg": "#FFFFFF",
+      "border": "#E2E8F0",
+      "divider": "#F1F5F9"
+    },
+    "brand": {
+      "primary_navy": "#0B1B3D",
+      "navy_hover": "#142D66",
+      "navy_muted": "#293B61"
+    },
+    "text": {
+      "primary": "#0F172A",
+      "secondary": "#64748B",
+      "tertiary": "#94A3B8",
+      "on_brand": "#FFFFFF"
+    },
+    "functional": {
+      "success_emerald": "#10B981",
+      "warning_amber": "#F59E0B",
+      "danger_rose": "#F43F5E",
+      "info_blue": "#2563EB",
+      "whatsapp_green": "#25D366"
+    }
+  },
+  "spacing_and_layout": {
+    "philosophy": "Optical alignment and deliberate negative space. The 'Control Room' grid for dashboards.",
+    "dashboard_grid": {
+      "base": "grid-cols-1 md:grid-cols-3 xl:grid-cols-4",
+      "gap": "gap-4 md:gap-6",
+      "kpi_span": "col-span-1",
+      "chart_span": "col-span-1 md:col-span-2 xl:col-span-3",
+      "list_span": "col-span-1 xl:col-span-1 row-span-2"
+    },
+    "navigation_structure": {
+      "mobile": "Mobile-first PWA. Fixed bottom navigation bar (h-16) with 5 key icons: Dashboard, Leads, Calls, WhatsApp, Tasks. Top header (h-14) for Global Search and Profile.",
+      "desktop": "Fixed left sidebar (w-64) with Dark Navy background (#0B1B3D) and White text. Main content area offset by ml-64."
+    },
+    "spacing_scale": {
+      "container_padding": "p-4 md:p-8",
+      "card_padding": "p-5",
+      "section_gap": "gap-8 md:gap-12"
+    }
+  },
+  "component_rules": {
+    "cards": {
+      "style": "Flat, pure white background (#FFFFFF). Crisp 1px border (#E2E8F0).",
+      "shadow": "shadow-sm hover:shadow-md transition-shadow duration-200",
+      "radius": "rounded-md"
+    },
+    "buttons": {
+      "primary": "bg-[#0B1B3D] text-white hover:bg-[#142D66] rounded-md px-4 py-2 font-medium transition-colors",
+      "secondary": "bg-white text-[#0F172A] border border-[#E2E8F0] hover:bg-[#F8FAFC] rounded-md px-4 py-2 font-medium transition-colors",
+      "ghost": "bg-transparent text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A] rounded-md px-4 py-2 font-medium transition-colors"
+    },
+    "inputs": {
+      "style": "bg-white border border-[#E2E8F0] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B1B3D]/20 focus:border-[#0B1B3D] transition-all"
+    },
+    "kanban_board": {
+      "column_bg": "bg-[#F8FAFC] rounded-lg p-3",
+      "card_bg": "bg-white border border-[#E2E8F0] rounded-md p-3 shadow-sm cursor-grab hover:border-[#0B1B3D]/30 transition-colors"
+    },
+    "whatsapp_ui": {
+      "container": "flex flex-col h-[calc(100vh-theme(spacing.32))] bg-[#EFEAE2]",
+      "message_bubble_in": "bg-white rounded-lg rounded-tl-none p-3 max-w-[85%] shadow-sm",
+      "message_bubble_out": "bg-[#D9FDD3] rounded-lg rounded-tr-none p-3 max-w-[85%] shadow-sm"
+    },
+    "badges": {
+      "style": "px-2.5 py-0.5 rounded-full text-xs font-medium border"
+    }
+  },
+  "interactions_and_motion": {
+    "hover_states": "All interactive elements must change background or border color on hover. Text contrast must increase or remain accessible.",
+    "transitions": "Use specific properties: transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease.",
+    "scrollbars": "Custom styled scrollbars. Thin, transparent track, dark navy or slate thumb. No bulky default gutters."
+  },
+  "icons": {
+    "library": "@phosphor-icons/react",
+    "style": "Duotone or Regular weight. Must look sharp and professional.",
+    "installation": "yarn add @phosphor-icons/react"
+  },
+  "testing": {
+    "requirement": "All interactive and key informational elements MUST include a data-testid attribute.",
+    "convention": "kebab-case, role-based. Example: data-testid='login-submit-button', data-testid='lead-kanban-card'"
+  },
+  "media_and_images": {
+    "login_background": {
+      "url": "https://images.unsplash.com/photo-1764083267311-8a2f37838051?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA4Mzl8MHwxfHNlYXJjaHwyfHxtb2Rlcm4lMjBhcmNoaXRlY3R1cmUlMjBuYXZ5JTIwYmx1ZXxlbnwwfHx8fDE3ODA2MjA5OTB8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Dark glass facade of a modern building. Use as a split-screen background on the login page (Desktop) with a dark overlay.",
+      "usage": "Login Page Hero / Split layout"
+    },
+    "empty_state_workspace": {
+      "url": "https://images.unsplash.com/photo-1765366417030-16d9765d920a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwxfHxlbXB0eSUyMGRlc2slMjB3b3Jrc3BhY2V8ZW58MHx8fHwxNzgwNjIwOTkwfDA&ixlib=rb-4.1.0&q=85",
+      "description": "Modern office interior with white desks. Use for 'No Leads Found' or 'No Tasks' empty states, wrapped in a grayscale filter with high transparency.",
+      "usage": "Empty States / Dashboards"
+    },
+    "user_avatar_placeholder": {
+      "url": "https://images.unsplash.com/photo-1632255657991-ce622acebecd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwyfHxwcm9mZXNzaW9uYWwlMjBvZmZpY2UlMjBwb3J0cmFpdHxlbnwwfHx8fDE3ODA2MjA5OTB8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Professional man standing in front of a building. Use as a default avatar for the authenticated user or employee list.",
+      "usage": "Profile Dropdown / Employee Management Table"
+    }
+  },
+  "instructions_to_main_agent": {
+    "1": "Strictly follow the color palette. Do not use generic Tailwind blue/gray defaults if they clash with the Navy/White theme.",
+    "2": "Ensure Mobile PWA styling. Implement the fixed bottom navigation exactly as described for small viewports, hidden on desktop. Sidebar hidden on mobile, fixed on desktop.",
+    "3": "Use Shadcn components for complex interactions (Tables, Dropdowns, Tabs) but strip heavy borders/radius to match the 'rounded-md' crisp look.",
+    "4": "Integrate 'Cabinet Grotesk' via font-face or Google Fonts equivalent if unavailable (like 'Space Grotesk' as fallback, but aim for Cabinet Grotesk from Fontshare).",
+    "5": "Do not use generic placeholder image URLs. Use the provided Unsplash URLs in the media_and_images section.",
+    "6": "Add data-testid to every CTA, form input, and major navigation link."
+  }
+}

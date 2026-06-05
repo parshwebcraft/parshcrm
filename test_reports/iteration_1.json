@@ -1,0 +1,42 @@
+{
+  "summary": "Full E2E test of Facets CRM AI MVP. Backend: 26/26 tests passing after fixing one ObjectId leak in POST /api/employees. Frontend: all critical flows verified — admin login, dashboard with 8 KPI cards, leads page (search/filters/views), pipeline (all 8 stages), call simulator (dial→connected→hangup→save), real Claude AI summary (returns sentiment/score/next_action), WhatsApp conversations (50 seeded) + send, tasks, employees, reports (funnel/pie/line/bar charts render), settings, notifications sheet, global search.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/employees", "issue": "Returned MongoDB ObjectId in response causing 500 (FIXED by excluding _id from response dict)"},
+      {"endpoint": "GET /api/health", "issue": "Route registered AFTER app.include_router(api) on line 738 — FastAPI ignores it. Returns 404. Not critical (not used by frontend) but should be moved above include_router."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Settings (when notifications panel open)", "issues": ["Settings backdrop becomes very dark/dim while Notifications sheet is open — possible double overlay; minor."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "(Optional) Move @api.get('/health') above app.include_router(api) so health endpoint is reachable.",
+    "(Optional) Add DialogContent description / aria-describedby — minor a11y warnings logged from Radix dialogs."
+  ],
+  "critical_code_review_comments": [
+    "server.py is ~740 lines — borderline; consider splitting routers into modules (leads.py, calls.py, etc.) once features grow.",
+    "create_employee originally returned the raw doc after insert_one(doc) which mutates doc to include _id — fixed by excluding _id. Apply the same pattern proactively in other write paths if added later.",
+    "Health route is unreachable because it is registered after include_router(). Move it up.",
+    "JWT secret is committed in /app/backend/.env — acceptable for demo, but rotate before production."
+  ],
+  "updated_files": [
+    "/app/backend/server.py (line ~528: exclude _id from create_employee response)",
+    "/app/backend/tests/backend_test.py (new pytest suite, 26 tests)"
+  ],
+  "success_rate": {"backend": "100% (26/26)", "frontend": "~95% — all flows verified manually via Playwright; the 2 reported script failures were selector mistakes in my own test (used input[name='name'] instead of [data-testid='new-lead-name'], and 'profile-menu-btn' instead of 'profile-menu-trigger') — the app's data-testids are correct."},
+  "test_credentials": "admin@facetscrm.com / password123, sales@facetscrm.com / password123, manager@facetscrm.com / password123 — all working.",
+  "seed_data_creation": "Backend auto-seeds on startup (idempotent): 25 users, 100 leads, tasks, calls, WhatsApp messages, notifications. Verified by GET /api/leads returning 100 items.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend tests live in /app/backend/tests/backend_test.py — run with `pytest backend/tests/backend_test.py -v`. The AI summary test calls real Claude (Emergent LLM key), takes 5-10s, may be flaky if quota issues — gives it 60s timeout. Frontend correct selectors: new-lead-{name|company|phone|email|website|city|state|industry}, profile-menu-trigger, logout-btn, login-submit-button.",
+  "rca of the issue": "ObjectId leak in POST /api/employees: insert_one() mutates the inserted document to add MongoDB-assigned _id; the response comprehension filtered only 'password_hash'. Fix: also exclude '_id'. Reproduction: POST /api/employees as admin → 500 'ObjectId not iterable'. Verified fixed (test_create_employee_admin now passes)."
+}

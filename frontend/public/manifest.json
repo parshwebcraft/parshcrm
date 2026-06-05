@@ -1,0 +1,38 @@
+{
+  "name": "Facets CRM AI",
+  "short_name": "Facets CRM",
+  "description": "Facets CRM AI by ParshWebCraft, crafted by Gauransh Jaroli for leads, calls, WhatsApp, tasks, and reports.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0B1B3D",
+  "theme_color": "#0B1B3D",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Leads",
+      "url": "/leads",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Tasks",
+      "url": "/tasks",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
