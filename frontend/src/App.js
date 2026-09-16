@@ -6,7 +6,12 @@ import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import Leads from "@/pages/Leads";
 import LeadDetail from "@/pages/LeadDetail";
+import Customers from "@/pages/Customers";
+import CustomerDetail from "@/pages/CustomerDetail";
 import Pipeline from "@/pages/Pipeline";
+import Sales from "@/pages/Sales";
+import Payments from "@/pages/Payments";
+import Expenses from "@/pages/Expenses";
 import Calls from "@/pages/Calls";
 import WhatsAppPage from "@/pages/WhatsApp";
 import Tasks from "@/pages/Tasks";
@@ -35,6 +40,13 @@ function PublicOnly({ children }) {
   return children;
 }
 
+function OwnerOnly({ children }) {
+  const { user } = useAuth();
+  const isOwner = user?.role === "admin" || user?.role === "manager";
+  if (!isOwner) return <Navigate to="/dashboard" replace />;
+  return children;
+}
+
 export default function App() {
   return (
     <AuthProvider>
@@ -59,7 +71,12 @@ export default function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/leads" element={<Leads />} />
             <Route path="/leads/:id" element={<LeadDetail />} />
+            <Route path="/customers" element={<Customers />} />
+            <Route path="/customers/:id" element={<CustomerDetail />} />
             <Route path="/pipeline" element={<Pipeline />} />
+            <Route path="/sales" element={<Sales />} />
+            <Route path="/payments" element={<Payments />} />
+            <Route path="/expenses" element={<OwnerOnly><Expenses /></OwnerOnly>} />
             <Route path="/calls" element={<Calls />} />
             <Route path="/whatsapp" element={<WhatsAppPage />} />
             <Route path="/tasks" element={<Tasks />} />

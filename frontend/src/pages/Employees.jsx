@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/api";
-import { initials } from "@/lib/constants";
+import { initials, formatINR, ROLE_LABELS } from "@/lib/constants";
 import { Plus, X, TrashSimple } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
@@ -64,17 +64,23 @@ function NewEmployeeDialog({ open, onClose, onCreated }) {
 
 export default function Employees() {
   const { user } = useAuth();
+  const isOwner = user?.role === "admin" || user?.role === "manager";
   const nav = useNavigate();
   const [emps, setEmps] = useState([]);
   const [perf, setPerf] = useState([]);
+  const [salesTable, setSalesTable] = useState([]);
   const [dialog, setDialog] = useState(false);
 
   const load = () => {
     api.get("/employees").then((r) => setEmps(r.data));
     api.get("/reports/employee-performance").then((r) => setPerf(r.data));
+    if (isOwner) {
+      api.get("/dashboard/owner", { params: { range: "year" } }).then((r) => setSalesTable(r.data.salesperson_table));
+    }
   };
   useEffect(() => {
     load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const remove = async (id) => {
@@ -89,6 +95,7 @@ export default function Employees() {
   };
 
   const perfById = Object.fromEntries(perf.map((p) => [p.user_id, p]));
+  const salesById = Object.fromEntries(salesTable.map((p) => [p.user_id, p]));
 
   return (
     <div className="mx-auto max-w-7xl space-y-4">
@@ -97,9 +104,9 @@ export default function Employees() {
           <div className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">
             Team
           </div>
-          <h1 className="font-display text-3xl font-black tracking-tight md:text-4xl">Employees</h1>
+          <h1 className="font-display text-3xl font-black tracking-tight md:text-4xl">Sales Team</h1>
         </div>
-        {(user?.role === "admin" || user?.role === "manager") && (
+        {isOwner && (
           <button
             data-testid="new-emp-btn"
             onClick={() => setDialog(true)}
@@ -111,21 +118,30 @@ export default function Employees() {
       </div>
 
       <div className="overflow-x-auto rounded-md border border-[#E2E8F0] bg-white">
-        <table className="w-full min-w-[800px] text-sm">
+        <table className="w-full min-w-[1000px] text-sm">
           <thead>
             <tr className="border-b border-[#E2E8F0] bg-[#FAFAFA] text-left text-xs uppercase tracking-wider text-slate-500">
               <th className="py-3 pl-4 font-semibold">Member</th>
               <th className="py-3 font-semibold">Role</th>
-              <th className="py-3 font-semibold">Email</th>
               <th className="py-3 font-semibold">Phone</th>
               <th className="py-3 font-semibold">Leads</th>
               <th className="py-3 font-semibold">Won</th>
+              {isOwner && (
+                <>
+                  <th className="py-3 font-semibold">Sales</th>
+                  <th className="py-3 font-semibold">Revenue</th>
+                  <th className="py-3 font-semibold">Target</th>
+                  <th className="py-3 font-semibold">Achievement</th>
+                </>
+              )}
+              <th className="py-3 font-semibold">Status</th>
               <th className="py-3 pr-4 font-semibold text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             {emps.map((e) => {
               const p = perfById[e.id];
+              const s = salesById[e.id];
               return (
                 <tr
                   key={e.id}
@@ -140,19 +156,37 @@ export default function Employees() {
                       </div>
                       <div>
                         <div className="font-medium text-slate-900">{e.name}</div>
-                        <div className="text-[10px] text-slate-500">Joined {new Date(e.created_at).toLocaleDateString()}</div>
+                        <div className="text-[10px] text-slate-500">{e.email}</div>
                       </div>
                     </div>
                   </td>
                   <td className="py-3">
-                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium capitalize ${ROLE_COLORS[e.role]}`}>
-                      {e.role}
+                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium ${ROLE_COLORS[e.role]}`}>
+                      {ROLE_LABELS[e.role] || e.role}
                     </span>
                   </td>
-                  <td className="py-3 text-slate-600">{e.email}</td>
                   <td className="py-3 font-mono text-xs text-slate-500">{e.phone}</td>
                   <td className="py-3">{p?.total_leads ?? 0}</td>
                   <td className="py-3 font-semibold text-emerald-600">{p?.won ?? 0}</td>
+                  {isOwner && (
+                    <>
+                      <td className="py-3">{s?.sales_count ?? 0}</td>
+                      <td className="py-3 font-mono text-xs">{formatINR(s?.revenue ?? 0)}</td>
+                      <td className="py-3 font-mono text-xs text-slate-500">{formatINR(s?.target ?? 0)}</td>
+                      <td className="py-3">
+                        {s?.target ? (
+                          <span className={`font-semibold ${s.achievement_pct >= 100 ? "text-emerald-600" : s.achievement_pct >= 60 ? "text-amber-600" : "text-rose-600"}`}>
+                            {s.achievement_pct}%
+                          </span>
+                        ) : <span className="text-slate-300">—</span>}
+                      </td>
+                    </>
+                  )}
+                  <td className="py-3">
+                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium ${e.active !== false ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-500"}`}>
+                      {e.active !== false ? "Active" : "Inactive"}
+                    </span>
+                  </td>
                   <td className="py-3 pr-4 text-right" onClick={(ev) => ev.stopPropagation()}>
                     {user?.role === "admin" && e.id !== user.id && (
                       <button

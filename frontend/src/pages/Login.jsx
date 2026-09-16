@@ -5,16 +5,16 @@ import { toast } from "sonner";
 import { Eye, EyeSlash } from "@phosphor-icons/react";
 
 const DEMO = [
-  { label: "Admin", email: "admin@facetscrm.com" },
-  { label: "Sales", email: "sales@facetscrm.com" },
-  { label: "Manager", email: "manager@facetscrm.com" },
+  { label: "Owner", email: "owner@demo.com" },
+  { label: "Salesperson", email: "sales1@demo.com" },
+  { label: "Manager", email: "manager@demo.com" },
 ];
 
 export default function Login() {
   const { login } = useAuth();
   const nav = useNavigate();
   const year = new Date().getFullYear();
-  const [email, setEmail] = useState("admin@facetscrm.com");
+  const [email, setEmail] = useState("owner@demo.com");
   const [password, setPassword] = useState("password123");
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -42,14 +42,14 @@ export default function Login() {
           <div className="w-full max-w-sm">
             <div className="mb-8 flex items-center gap-2">
               <div className="grid h-10 w-10 place-items-center rounded-md bg-[#0B1B3D] text-white font-display font-black">
-                F
+                P
               </div>
               <div>
                 <div className="font-display text-xl font-bold tracking-tight">
-                  Facets CRM AI
+                  ParshCRM
                 </div>
                 <div className="text-xs text-slate-500">
-                  Internal sales platform
+                  CRM SaaS by ParshWebCraft
                 </div>
               </div>
             </div>
@@ -58,7 +58,7 @@ export default function Login() {
               Sign in
             </h1>
             <p className="mt-2 text-sm text-slate-500">
-              Use your Facets work credentials to continue.
+              Use your ParshCRM credentials to continue.
             </p>
 
             <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-4">
@@ -138,7 +138,7 @@ export default function Login() {
           </div>
         </div>
         <footer className="pt-8 text-center text-xs text-slate-500">
-          <div>Copyright © {year} Facets CRM AI. All rights reserved.</div>
+          <div>Copyright © {year} ParshCRM. All rights reserved.</div>
           <div className="mt-1">
             Crafted by{" "}
             <span className="font-semibold text-[#0B1B3D]">
@@ -154,13 +154,13 @@ export default function Login() {
       <div className="relative hidden lg:block">
         <img
           src="https://images.unsplash.com/photo-1764083267311-8a2f37838051?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA4Mzl8MHwxfHNlYXJjaHwyfHxtb2Rlcm4lMjBhcmNoaXRlY3R1cmUlMjBuYXZ5JTIwYmx1ZXxlbnwwfHx8fDE3ODA2MjA5OTB8MA&ixlib=rb-4.1.0&q=85"
-          alt="Facets office"
+          alt="ParshWebCraft office"
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-tr from-[#0B1B3D]/90 via-[#0B1B3D]/60 to-transparent" />
         <div className="absolute bottom-12 left-12 right-12 text-white">
           <div className="font-mono text-xs uppercase tracking-[0.2em] text-white/60">
-            Facets Lifestyle Pvt Ltd
+            ParshWebCraft
           </div>
           <div className="mt-3 font-display text-5xl font-black leading-none">
             Sales,
@@ -169,7 +169,7 @@ export default function Login() {
           </div>
           <div className="mt-4 max-w-md text-sm text-white/70">
             One workspace for leads, calls, WhatsApp, follow-ups and AI-powered
-            insights. Built for the Facets growth team.
+            insights. Built for growing sales teams.
           </div>
         </div>
       </div>

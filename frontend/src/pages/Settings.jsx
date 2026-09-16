@@ -91,7 +91,7 @@ export default function Settings() {
       <div className="rounded-md border border-[#E2E8F0] bg-white p-5">
         <div className="font-display text-lg font-bold">PWA</div>
         <p className="mt-1 text-xs text-slate-500">
-          Facets CRM AI is a Progressive Web App. Install it on your phone via your browser menu →{" "}
+          ParshCRM is a Progressive Web App. Install it on your phone via your browser menu →{" "}
           <span className="font-semibold">"Add to home screen"</span>.
         </p>
       </div>

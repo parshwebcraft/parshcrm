@@ -70,7 +70,7 @@ export default function LeadDocuments({ leadId }) {
     load();
   };
 
-  const token = localStorage.getItem("facets_token");
+  const token = localStorage.getItem("parshcrm_token");
 
   return (
     <div className="rounded-md border border-[#E2E8F0] bg-white p-5">

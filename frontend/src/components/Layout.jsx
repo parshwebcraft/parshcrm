@@ -23,7 +23,7 @@ export default function Layout() {
         {!isWhatsApp && (
           <footer className="border-t border-[#E2E8F0] bg-white px-4 py-4 text-xs text-slate-500 md:px-6 lg:ml-0 lg:px-8">
             <div className="mx-auto flex max-w-7xl flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-              <div>Copyright © {year} Facets CRM AI. All rights reserved.</div>
+              <div>Copyright © {year} ParshCRM. All rights reserved.</div>
               <div>
                 Crafted by{" "}
                 <span className="font-semibold text-[#0B1B3D]">

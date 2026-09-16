@@ -1,7 +1,7 @@
 {
-  "name": "Facets CRM AI",
-  "short_name": "Facets CRM",
-  "description": "Facets CRM AI by ParshWebCraft, crafted by Gauransh Jaroli for leads, calls, WhatsApp, tasks, and reports.",
+  "name": "ParshCRM",
+  "short_name": "ParshCRM",
+  "description": "ParshCRM by ParshWebCraft, crafted by Gauransh Jaroli for leads, calls, WhatsApp, tasks, and reports.",
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",

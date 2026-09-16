@@ -1,4 +1,4 @@
-"""Backend integration tests for Facets CRM AI."""
+"""Backend integration tests for ParshCRM."""
 import os
 import time
 import uuid
@@ -9,8 +9,8 @@ import requests
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://lead-pipeline-pro-21.preview.emergentagent.com").rstrip("/")
 API = f"{BASE_URL}/api"
 
-ADMIN = {"email": "admin@facetscrm.com", "password": "password123"}
-SALES = {"email": "sales@facetscrm.com", "password": "password123"}
+ADMIN = {"email": "owner@demo.com", "password": "password123"}
+SALES = {"email": "sales1@demo.com", "password": "password123"}
 
 
 # -------------------- Fixtures --------------------
@@ -215,7 +215,7 @@ class TestEmployees:
         assert all("password_hash" not in e for e in emps)
 
     def test_create_employee_admin(self, admin_client):
-        email = f"test_{uuid.uuid4().hex[:8]}@facetscrm.com"
+        email = f"test_{uuid.uuid4().hex[:8]}@demo.com"
         r = admin_client.post(f"{API}/employees", json={
             "name": "TEST_Employee", "email": email, "role": "sales", "password": "password123",
         }, timeout=15)
@@ -247,9 +247,9 @@ class TestMisc:
         assert r.status_code == 200
 
     def test_settings_update_admin(self, admin_client):
-        r = admin_client.put(f"{API}/settings", json={"company_name": "Facets Lifestyle Pvt Ltd"}, timeout=15)
+        r = admin_client.put(f"{API}/settings", json={"company_name": "ParshWebCraft"}, timeout=15)
         assert r.status_code == 200
-        assert r.json().get("company_name") == "Facets Lifestyle Pvt Ltd"
+        assert r.json().get("company_name") == "ParshWebCraft"
 
     def test_settings_update_non_admin(self):
         login = requests.post(f"{API}/auth/login", json=SALES, timeout=15).json()

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "@/lib/api";
-import { STATUSES, STATUS_COLORS, SOURCES, formatINR, relTime } from "@/lib/constants";
+import { STATUSES, STATUS_COLORS, SOURCES, PRIORITIES, formatINR, relTime } from "@/lib/constants";
 import {
   Phone,
   WhatsappLogo,
@@ -9,6 +9,7 @@ import {
   Notepad,
   ArrowLeft,
   TrashSimple,
+  UserSwitch,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import {
@@ -72,6 +73,16 @@ export default function LeadDetail() {
     }
   };
 
+  const convertToCustomer = async () => {
+    try {
+      const { data } = await api.post(`/leads/${lead.id}/convert`);
+      toast.success("Converted to customer");
+      nav(`/customers/${data.id}`);
+    } catch {
+      toast.error("Failed to convert");
+    }
+  };
+
   const owner = employees.find((e) => e.id === lead.assigned_to);
 
   return (
@@ -116,6 +127,13 @@ export default function LeadDetail() {
                   <WhatsappLogo size={14} /> WhatsApp
                 </a>
                 <button
+                  data-testid="convert-customer-btn"
+                  onClick={convertToCustomer}
+                  className="inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
+                >
+                  <UserSwitch size={14} /> Convert to customer
+                </button>
+                <button
                   data-testid="delete-lead-btn"
                   onClick={deleteLead}
                   className="inline-grid h-9 w-9 place-items-center rounded-md border border-rose-200 text-rose-600 hover:bg-rose-50"
@@ -147,7 +165,10 @@ export default function LeadDetail() {
                   ["State", lead.state],
                   ["Industry", lead.industry],
                   ["Source", lead.source],
+                  ["Product / Service", lead.product_service],
                   ["Budget", formatINR(lead.budget)],
+                  ["Priority", lead.priority],
+                  ["Next follow-up", lead.next_follow_up ? relTime(lead.next_follow_up) : null],
                   ["Created", relTime(lead.created_at)],
                 ].map(([k, v]) => (
                   <div key={k}>
@@ -310,6 +331,31 @@ export default function LeadDetail() {
                 <option key={s}>{s}</option>
               ))}
             </select>
+
+            <div className="mb-2 mt-4 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+              Priority
+            </div>
+            <select
+              data-testid="lead-priority-select"
+              value={lead.priority || "Medium"}
+              onChange={(e) => updateField("priority", e.target.value)}
+              className="w-full rounded-md border border-[#E2E8F0] px-3 py-2 text-sm"
+            >
+              {PRIORITIES.map((p) => (
+                <option key={p}>{p}</option>
+              ))}
+            </select>
+
+            <div className="mb-2 mt-4 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+              Next follow-up
+            </div>
+            <input
+              data-testid="lead-followup-input"
+              type="date"
+              value={lead.next_follow_up ? lead.next_follow_up.slice(0, 10) : ""}
+              onChange={(e) => updateField("next_follow_up", e.target.value ? new Date(e.target.value).toISOString() : null)}
+              className="w-full rounded-md border border-[#E2E8F0] px-3 py-2 text-sm"
+            />
 
             <div className="mb-2 mt-4 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
               Owner

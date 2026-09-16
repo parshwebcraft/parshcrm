@@ -6,9 +6,9 @@ from typing import Optional, Tuple
 import requests
 
 STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
-APP_NAME = "facets-crm"
+APP_NAME = "parshcrm"
 
-logger = logging.getLogger("facets-crm.storage")
+logger = logging.getLogger("parshcrm.storage")
 _storage_key: Optional[str] = None
 
 

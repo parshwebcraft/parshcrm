@@ -13,6 +13,9 @@ import {
   ListChecks,
   EnvelopeSimple,
   ChatCircleDots,
+  Receipt,
+  Target,
+  Wallet,
 } from "@phosphor-icons/react";
 import {
   Bar,
@@ -106,7 +109,10 @@ export default function EmployeeDetail() {
         <Stat icon={Trophy} label="Won deals" value={t.won} accent="bg-emerald-50 text-emerald-700" />
         <Stat icon={XCircle} label="Lost deals" value={t.lost} accent="bg-rose-50 text-rose-700" />
         <Stat icon={ChartLineUp} label="Conversion" value={`${t.conversion}%`} accent="bg-violet-50 text-violet-700" />
-        <Stat icon={Coins} label="Revenue won" value={formatINR(t.revenue_won)} accent="bg-[#0B1B3D]/10 text-[#0B1B3D]" />
+        <Stat icon={Receipt} label="Sales" value={t.sales_count} accent="bg-blue-50 text-blue-700" />
+        <Stat icon={Coins} label="Revenue" value={formatINR(t.revenue)} accent="bg-[#0B1B3D]/10 text-[#0B1B3D]" />
+        <Stat icon={Wallet} label="Pending collection" value={formatINR(t.pending_collection)} accent="bg-amber-50 text-amber-700" />
+        <Stat icon={Target} label="Target achievement" value={t.target ? `${t.achievement_pct}%` : "—"} accent="bg-emerald-50 text-emerald-700" />
         <Stat icon={PhoneCall} label="Calls" value={t.calls_total} accent="bg-blue-50 text-blue-700" />
         <Stat icon={ChatCircleDots} label="Connect rate" value={`${t.connect_rate}%`} accent="bg-amber-50 text-amber-700" />
         <Stat icon={Phone} label="Talk time" value={fmtTalk(t.talk_time_seconds)} accent="bg-[#0B1B3D]/10 text-[#0B1B3D]" />

@@ -9,7 +9,7 @@ MODEL_PROVIDER = "anthropic"
 MODEL_NAME = "claude-sonnet-4-6"
 
 SYSTEM_PROMPT = (
-    "You are an AI sales assistant for a B2B CRM called Facets CRM AI. "
+    "You are an AI sales assistant for a B2B CRM called ParshCRM. "
     "Given the raw notes from a sales call, produce a concise structured "
     "summary in strict JSON with the keys: summary (string, 2-3 sentences), "
     "sentiment (one of: positive, neutral, negative), lead_score (integer 0-100), "

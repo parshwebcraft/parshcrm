@@ -9,7 +9,7 @@ import requests
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://lead-pipeline-pro-21.preview.emergentagent.com").rstrip("/")
 API = f"{BASE_URL}/api"
 
-ADMIN = {"email": "admin@facetscrm.com", "password": "password123"}
+ADMIN = {"email": "owner@demo.com", "password": "password123"}
 
 
 @pytest.fixture(scope="module")
@@ -162,7 +162,7 @@ class TestEmployeeStats:
         by_status = data["by_status"]
         assert isinstance(by_status, list) and len(by_status) == 8
         statuses = [b["status"] for b in by_status]
-        assert statuses == ["New", "Contacted", "Interested", "Follow Up",
+        assert statuses == ["New", "Contacted", "Follow Up", "Qualified",
                             "Proposal Sent", "Negotiation", "Won", "Lost"]
 
         assert isinstance(data["recent_activity"], list)

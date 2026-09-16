@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { MagnifyingGlass, Bell, SignOut } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth";
 import { api } from "@/lib/api";
-import { initials, relTime } from "@/lib/constants";
+import { initials, relTime, ROLE_LABELS } from "@/lib/constants";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,9 +53,9 @@ export default function TopBar() {
         {/* Mobile logo */}
         <div className="lg:hidden flex items-center gap-2">
           <div className="grid h-8 w-8 place-items-center rounded-md bg-[#0B1B3D] text-white font-display font-black">
-            F
+            P
           </div>
-          <span className="font-display font-bold text-[#0B1B3D]">Facets</span>
+          <span className="font-display font-bold text-[#0B1B3D]">ParshCRM</span>
         </div>
 
         {/* Search */}
@@ -159,7 +159,7 @@ export default function TopBar() {
                   {user?.name}
                 </div>
                 <div className="text-[10px] uppercase tracking-wider text-slate-500">
-                  {user?.role}
+                  {ROLE_LABELS[user?.role] || user?.role}
                 </div>
               </div>
             </DropdownMenuTrigger>

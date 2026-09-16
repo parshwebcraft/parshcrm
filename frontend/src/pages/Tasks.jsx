@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
-import { PRIORITIES, TASK_STATUSES, STATUS_COLORS, relTime } from "@/lib/constants";
+import { PRIORITIES, TASK_STATUSES, TASK_TYPES, relTime } from "@/lib/constants";
 import { Plus, X, Check, ListBullets, Calendar as CalIcon } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
@@ -10,11 +10,13 @@ const PRI_COLORS = {
   Low: "bg-slate-100 text-slate-700 border-slate-200",
 };
 
-function NewTaskDialog({ open, onClose, onCreated, leads, employees }) {
+function NewTaskDialog({ open, onClose, onCreated, leads, employees, customers }) {
   const [form, setForm] = useState({
     title: "",
     description: "",
+    type: "Follow-up",
     lead_id: "",
+    customer_id: "",
     assigned_to: "",
     priority: "Medium",
     due_date: "",
@@ -30,6 +32,7 @@ function NewTaskDialog({ open, onClose, onCreated, leads, employees }) {
       await api.post("/tasks", {
         ...form,
         lead_id: form.lead_id || null,
+        customer_id: form.customer_id || null,
         assigned_to: form.assigned_to || null,
         due_date: form.due_date ? new Date(form.due_date).toISOString() : null,
       });
@@ -67,6 +70,13 @@ function NewTaskDialog({ open, onClose, onCreated, leads, employees }) {
           />
           <div className="grid grid-cols-2 gap-2">
             <select
+              value={form.type}
+              onChange={(e) => set("type", e.target.value)}
+              className="rounded-md border border-[#E2E8F0] px-3 py-2 text-sm"
+            >
+              {TASK_TYPES.map((t) => <option key={t}>{t}</option>)}
+            </select>
+            <select
               data-testid="task-priority-select"
               value={form.priority}
               onChange={(e) => set("priority", e.target.value)}
@@ -74,14 +84,14 @@ function NewTaskDialog({ open, onClose, onCreated, leads, employees }) {
             >
               {PRIORITIES.map((p) => <option key={p}>{p}</option>)}
             </select>
-            <input
-              data-testid="task-due-input"
-              type="datetime-local"
-              value={form.due_date}
-              onChange={(e) => set("due_date", e.target.value)}
-              className="rounded-md border border-[#E2E8F0] px-3 py-2 text-sm"
-            />
           </div>
+          <input
+            data-testid="task-due-input"
+            type="datetime-local"
+            value={form.due_date}
+            onChange={(e) => set("due_date", e.target.value)}
+            className="w-full rounded-md border border-[#E2E8F0] px-3 py-2 text-sm"
+          />
           <select
             value={form.lead_id}
             onChange={(e) => set("lead_id", e.target.value)}
@@ -90,6 +100,16 @@ function NewTaskDialog({ open, onClose, onCreated, leads, employees }) {
             <option value="">Link to lead (optional)</option>
             {leads.slice(0, 100).map((l) => (
               <option key={l.id} value={l.id}>{l.name} — {l.company}</option>
+            ))}
+          </select>
+          <select
+            value={form.customer_id}
+            onChange={(e) => set("customer_id", e.target.value)}
+            className="w-full rounded-md border border-[#E2E8F0] px-3 py-2 text-sm"
+          >
+            <option value="">Link to customer (optional)</option>
+            {customers.slice(0, 100).map((c) => (
+              <option key={c.id} value={c.id}>{c.name} — {c.company}</option>
             ))}
           </select>
           <select
@@ -115,9 +135,16 @@ function NewTaskDialog({ open, onClose, onCreated, leads, employees }) {
   );
 }
 
+const QUICK_FILTERS = ["All", "Today", "Upcoming", "Overdue", "Completed"];
+
+function isOverdue(t) {
+  return t.status !== "Completed" && t.due_date && new Date(t.due_date) < new Date();
+}
+
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [leads, setLeads] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [filter, setFilter] = useState("All");
   const [view, setView] = useState("list");
@@ -127,6 +154,7 @@ export default function Tasks() {
   useEffect(() => {
     load();
     api.get("/leads", { params: { limit: 200 } }).then((r) => setLeads(r.data));
+    api.get("/customers", { params: { limit: 200 } }).then((r) => setCustomers(r.data));
     api.get("/employees").then((r) => setEmployees(r.data));
   }, []);
 
@@ -137,9 +165,19 @@ export default function Tasks() {
   };
 
   const leadById = Object.fromEntries(leads.map((l) => [l.id, l]));
+  const custById = Object.fromEntries(customers.map((c) => [c.id, c]));
   const empById = Object.fromEntries(employees.map((e) => [e.id, e]));
 
-  const filtered = tasks.filter((t) => filter === "All" || t.status === filter);
+  const today = new Date().toISOString().slice(0, 10);
+  const filtered = tasks.filter((t) => {
+    if (filter === "All") return true;
+    if (filter === "Completed") return t.status === "Completed";
+    if (filter === "Overdue") return isOverdue(t);
+    if (filter === "Today") return t.due_date && t.due_date.slice(0, 10) === today && t.status !== "Completed";
+    if (filter === "Upcoming") return t.due_date && t.due_date.slice(0, 10) > today && t.status !== "Completed";
+    return t.status === filter;
+  });
+  const overdueCount = tasks.filter(isOverdue).length;
 
   // Calendar grouping by due date (next 14 days)
   const calBuckets = {};
@@ -185,15 +223,6 @@ export default function Tasks() {
               <CalIcon size={14} /> Calendar
             </button>
           </div>
-          <select
-            data-testid="tasks-filter"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="rounded-md border border-[#E2E8F0] px-3 py-2 text-sm"
-          >
-            <option>All</option>
-            {TASK_STATUSES.map((s) => <option key={s}>{s}</option>)}
-          </select>
           <button
             data-testid="new-task-btn"
             onClick={() => setDialog(true)}
@@ -202,6 +231,26 @@ export default function Tasks() {
             <Plus size={14} /> New task
           </button>
         </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        {QUICK_FILTERS.map((f) => (
+          <button
+            key={f}
+            data-testid={`tasks-filter-${f.toLowerCase()}`}
+            onClick={() => setFilter(f)}
+            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold ${
+              filter === f ? "border-[#0B1B3D] bg-[#0B1B3D] text-white" : "border-[#E2E8F0] bg-white text-slate-600 hover:bg-slate-50"
+            }`}
+          >
+            {f}
+            {f === "Overdue" && overdueCount > 0 && (
+              <span className={`grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] ${filter === f ? "bg-white/20" : "bg-rose-500 text-white"}`}>
+                {overdueCount}
+              </span>
+            )}
+          </button>
+        ))}
       </div>
 
       {view === "list" ? (
@@ -222,19 +271,21 @@ export default function Tasks() {
               >
                 {t.status === "Completed" && <Check size={14} weight="bold" />}
               </button>
-              <div className="md:col-span-4">
+              <div className="md:col-span-3">
                 <div className={`font-medium ${t.status === "Completed" ? "line-through text-slate-400" : ""}`}>
                   {t.title}
                 </div>
-                <div className="text-xs text-slate-500">{leadById[t.lead_id]?.name || "—"}</div>
+                <div className="text-xs text-slate-500">
+                  {t.type || "Follow-up"} · {custById[t.customer_id]?.name || leadById[t.lead_id]?.name || "—"}
+                </div>
               </div>
               <div className="md:col-span-2">
                 <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${PRI_COLORS[t.priority]}`}>
                   {t.priority}
                 </span>
               </div>
-              <div className="md:col-span-2 text-xs text-slate-500">
-                {t.due_date ? relTime(t.due_date) : "—"}
+              <div className={`md:col-span-2 text-xs ${isOverdue(t) ? "font-semibold text-rose-600" : "text-slate-500"}`}>
+                {t.due_date ? relTime(t.due_date) : "—"} {isOverdue(t) && "· Overdue"}
               </div>
               <div className="md:col-span-2 text-xs text-slate-500">
                 {empById[t.assigned_to]?.name || "Unassigned"}
@@ -246,7 +297,7 @@ export default function Tasks() {
                   onChange={(e) => setStatus(t, e.target.value)}
                   className="rounded-md border border-[#E2E8F0] px-2 py-1 text-xs"
                 >
-                  {TASK_STATUSES.map((s) => <option key={s}>{s}</option>)}
+                  {TASK_STATUSES.filter((s) => s !== "Overdue").map((s) => <option key={s}>{s}</option>)}
                 </select>
               </div>
             </div>
@@ -290,6 +341,7 @@ export default function Tasks() {
         onClose={() => setDialog(false)}
         onCreated={load}
         leads={leads}
+        customers={customers}
         employees={employees}
       />
     </div>

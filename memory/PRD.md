@@ -1,12 +1,12 @@
-# Facets CRM AI — PRD
+# ParshCRM — PRD
 
 ## Original problem statement
-Build "Facets CRM AI", a complete production-grade SaaS CRM (inspired by Superfone, LeadSquared, HubSpot) for Facets Lifestyle Pvt Ltd — Lead Management, AI-Assisted Calling, WhatsApp Communication, Follow-up Tracking, Sales Pipeline, Employee Management, Analytics Dashboard. Mobile-first PWA installable on Android/iOS/Desktop with bottom navigation for sales reps.
+Build "ParshCRM", a complete production-grade SaaS CRM (inspired by Superfone, LeadSquared, HubSpot) for ParshWebCraft — Lead Management, AI-Assisted Calling, WhatsApp Communication, Follow-up Tracking, Sales Pipeline, Employee Management, Analytics Dashboard. Mobile-first PWA installable on Android/iOS/Desktop with bottom navigation for sales reps.
 
 ## Stack (deployed)
 - **Frontend**: React 19 + React Router 7 + Tailwind + Shadcn UI + Recharts + Phosphor Icons
 - **Backend**: FastAPI + Motor (MongoDB async) + PyJWT + bcrypt + emergentintegrations
-- **DB**: MongoDB (`facets_crm` db)
+- **DB**: MongoDB (`parshcrm_local` db)
 - **LLM**: Claude Sonnet (`claude-sonnet-4-6`) via Emergent Universal Key for AI call summaries
 
 ## User personas
@@ -15,9 +15,9 @@ Build "Facets CRM AI", a complete production-grade SaaS CRM (inspired by Superfo
 3. **Sales** — leads, calls, WhatsApp, tasks for own/assigned leads
 
 ## Test credentials
-- admin@facetscrm.com / password123
-- sales@facetscrm.com / password123
-- manager@facetscrm.com / password123
+- admin@parshwebcraft.in / password123
+- sales@parshwebcraft.in / password123
+- manager@parshwebcraft.in / password123
 
 ## Implemented in v1 (Feb 2026)
 - JWT auth (Bearer token in localStorage) + protected routes + role-aware UI
@@ -38,7 +38,7 @@ Build "Facets CRM AI", a complete production-grade SaaS CRM (inspired by Superfo
 
 ## Added in v1.1 (Feb 2026)
 - **CSV bulk import** for leads — `POST /api/leads/import` (multipart) + Import dialog with sample CSV download, error preview, success toast
-- **Documents tab** on lead detail — upload/list/download/soft-delete via Emergent Object Storage (`facets-crm/leads/{lead_id}/{uuid}.{ext}`), 15 MB cap, MIME-aware icons, signed `?auth=` download URLs for `<a>` tags
+- **Documents tab** on lead detail — upload/list/download/soft-delete via Emergent Object Storage (`parshcrm/leads/{lead_id}/{uuid}.{ext}`), 15 MB cap, MIME-aware icons, signed `?auth=` download URLs for `<a>` tags
 - **Per-employee dashboard** at `/employees/:id` — 8 KPI cards (won, lost, conversion, revenue, calls, connect rate, talk time, pending tasks), leads-by-status bar chart, recent activity feed, open-pipeline total, top-leads-by-score clickable list
 - Employees table rows are now clickable → detail page
 - Backend test suite expanded to 33 tests (all passing)
