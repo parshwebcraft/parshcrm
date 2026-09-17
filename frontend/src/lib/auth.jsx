@@ -37,8 +37,14 @@ export function AuthProvider({ children }) {
     window.location.href = "/login";
   };
 
+  const updateProfile = async (patch) => {
+    const { data } = await api.put("/auth/me", patch);
+    setUser(data);
+    return data;
+  };
+
   return (
-    <AuthCtx.Provider value={{ user, loading, login, logout }}>
+    <AuthCtx.Provider value={{ user, loading, login, logout, updateProfile }}>
       {children}
     </AuthCtx.Provider>
   );

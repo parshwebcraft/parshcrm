@@ -10,8 +10,8 @@ body {
   margin: 0;
   padding: 0;
   font-family: "IBM Plex Sans", system-ui, sans-serif;
-  background-color: #fafafa;
-  color: #0f172a;
+  background-color: var(--page-bg, #fafafa);
+  color: var(--page-text, #0f172a);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -53,6 +53,9 @@ script[src*="emergentagent.com"] {
 
 @layer base {
   :root {
+    --page-bg: #fafafa;
+    --page-text: #0f172a;
+
     --background: 0 0% 98%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
@@ -80,6 +83,118 @@ script[src*="emergentagent.com"] {
     --chart-4: 211 100% 50%;
     --chart-5: 350 89% 60%;
   }
+
+  /* Dark theme — toggled via the .dark class on <html> (see Profile page / next-themes). */
+  .dark {
+    --page-bg: #0b1220;
+    --page-text: #e2e8f0;
+
+    --background: 222 47% 7%;
+    --foreground: 210 40% 92%;
+    --card: 217 33% 11%;
+    --card-foreground: 210 40% 92%;
+    --popover: 217 33% 11%;
+    --popover-foreground: 210 40% 92%;
+    --primary: 217 91% 70%; /* brighter navy-blue reads better on a dark surface */
+    --primary-foreground: 222 47% 7%;
+    --secondary: 217 33% 16%;
+    --secondary-foreground: 210 40% 92%;
+    --muted: 217 33% 16%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 16%;
+    --accent-foreground: 210 40% 92%;
+    --destructive: 350 89% 65%;
+    --destructive-foreground: 222 47% 7%;
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
+    --ring: 217 91% 70%;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   Dark-mode overrides for the app's hand-rolled Tailwind arbitrary-value
+   classes (bg-white, border-[#E2E8F0], text-slate-*, etc). Pages in this
+   codebase mostly use literal design-system colors rather than dark:
+   variants, so these compound selectors retarget the same recurring
+   tokens app-wide instead of editing every page.
+   ------------------------------------------------------------------------- */
+.dark .bg-white {
+  background-color: #111a2e;
+}
+.dark .bg-\[\#FAFAFA\] {
+  background-color: #0b1220;
+}
+.dark .bg-\[\#F8FAFC\] {
+  background-color: #0f172a;
+}
+.dark .border-\[\#E2E8F0\] {
+  border-color: #1e293b;
+}
+.dark .border-\[\#F1F5F9\] {
+  border-color: #1e293b;
+}
+.dark .text-slate-900 {
+  color: #f1f5f9;
+}
+.dark .text-slate-700 {
+  color: #cbd5e1;
+}
+.dark .text-slate-600 {
+  color: #94a3b8;
+}
+.dark .text-slate-500 {
+  color: #94a3b8;
+}
+.dark .text-slate-400 {
+  color: #64748b;
+}
+.dark .bg-slate-50 {
+  background-color: #0f172a;
+}
+.dark .bg-slate-100 {
+  background-color: #1e293b;
+}
+.dark .hover\:bg-slate-50:hover {
+  background-color: #1e293b;
+}
+.dark .hover\:bg-slate-100:hover {
+  background-color: #1e293b;
+}
+.dark .disabled\:bg-slate-50:disabled {
+  background-color: #0f172a;
+}
+.dark .kanban-column {
+  background-color: #0f172a;
+}
+.dark .kanban-column.drag-over {
+  background-color: #1e293b;
+}
+/* Brand-navy icon badges (accent="bg-[#0B1B3D]/10 text-[#0B1B3D]") are tuned for
+   a white card and go near-invisible on a dark one — lighten to a sky blue. */
+.dark .text-\[\#0B1B3D\] {
+  color: #93c5fd;
+}
+.dark .bg-\[\#0B1B3D\]\/10 {
+  background-color: rgba(96, 165, 250, 0.16);
+}
+.dark .bg-\[\#0B1B3D\]\/5 {
+  background-color: rgba(96, 165, 250, 0.1);
+}
+
+/* The left sidebar is a fixed dark-navy brand surface in both themes (unlike the
+   rest of the app, it never goes light), so its white logo mark and white active-
+   nav-item pill must stay white/navy rather than picking up the dark overrides above. */
+.dark .sidebar-shell .bg-white {
+  background-color: #ffffff;
+}
+.dark .sidebar-shell .text-\[\#0B1B3D\] {
+  color: #0b1b3d;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
 }
 
 @layer base {

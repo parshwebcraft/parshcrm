@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "next-themes";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { DATE_RANGES, SALE_STATUS_COLORS, formatINR, relTime } from "@/lib/constants";
@@ -35,6 +36,19 @@ import {
 } from "recharts";
 
 const CHART_COLORS = ["#0B1B3D", "#2563EB", "#10B981", "#F59E0B", "#F43F5E", "#8B5CF6", "#14B8A6", "#EC4899"];
+
+/** Single-series chart colors shift to a brighter blue in dark mode — the brand
+ * navy (#0B1B3D) barely contrasts against a dark card background. */
+function useChartTheme() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  return {
+    brand: isDark ? "#60A5FA" : "#0B1B3D",
+    grid: isDark ? "#1E293B" : "#F1F5F9",
+    axis: isDark ? "#64748B" : "#94A3B8",
+    tooltipBg: isDark ? "#1E293B" : "#0B1B3D",
+  };
+}
 
 function KPI({ icon: Icon, label, value, accent, testid }) {
   return (
@@ -78,6 +92,7 @@ function RangePicker({ range, setRange }) {
 
 function OwnerDashboard() {
   const nav = useNavigate();
+  const chart = useChartTheme();
   const [range, setRange] = useState("month");
   const [data, setData] = useState(null);
 
@@ -132,16 +147,16 @@ function OwnerDashboard() {
             <AreaChart data={data?.revenue_trend || []}>
               <defs>
                 <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#0B1B3D" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#0B1B3D" stopOpacity={0} />
+                  <stop offset="5%" stopColor={chart.brand} stopOpacity={0.25} />
+                  <stop offset="95%" stopColor={chart.brand} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-              <XAxis dataKey="month" stroke="#94A3B8" fontSize={11} />
-              <YAxis stroke="#94A3B8" fontSize={11} tickFormatter={(v) => formatINR(v, { decimals: 0 })} />
-              <Tooltip formatter={(v) => formatINR(v)} contentStyle={{ background: "#0B1B3D", border: "none", color: "white", borderRadius: 6 }} labelStyle={{ color: "white" }} />
+              <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+              <XAxis dataKey="month" stroke={chart.axis} fontSize={11} />
+              <YAxis stroke={chart.axis} fontSize={11} tickFormatter={(v) => formatINR(v, { decimals: 0 })} />
+              <Tooltip formatter={(v) => formatINR(v)} contentStyle={{ background: chart.tooltipBg, border: "none", color: "white", borderRadius: 6 }} labelStyle={{ color: "white" }} />
               <Legend iconSize={8} wrapperStyle={{ fontSize: 11 }} />
-              <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#0B1B3D" fill="url(#revGrad)" strokeWidth={2.5} />
+              <Area type="monotone" dataKey="revenue" name="Revenue" stroke={chart.brand} fill="url(#revGrad)" strokeWidth={2.5} />
               <Line type="monotone" dataKey="expenses" name="Expenses" stroke="#F43F5E" strokeWidth={2} dot={false} />
               <Line type="monotone" dataKey="profit" name="Profit" stroke="#10B981" strokeWidth={2} dot={false} />
             </AreaChart>
@@ -165,11 +180,11 @@ function OwnerDashboard() {
         <Panel eyebrow="Team" title="Sales performance" className="lg:col-span-2">
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={data?.sales_performance || []}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-              <XAxis dataKey="salesperson" stroke="#94A3B8" fontSize={11} />
-              <YAxis stroke="#94A3B8" fontSize={11} tickFormatter={(v) => formatINR(v, { decimals: 0 })} />
+              <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+              <XAxis dataKey="salesperson" stroke={chart.axis} fontSize={11} />
+              <YAxis stroke={chart.axis} fontSize={11} tickFormatter={(v) => formatINR(v, { decimals: 0 })} />
               <Tooltip formatter={(v) => formatINR(v)} />
-              <Bar dataKey="amount" name="Sales amount" fill="#0B1B3D" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="amount" name="Sales amount" fill={chart.brand} radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </Panel>
@@ -203,11 +218,11 @@ function OwnerDashboard() {
       <Panel eyebrow="Pipeline" title="Lead funnel">
         <ResponsiveContainer width="100%" height={240}>
           <BarChart data={data?.lead_funnel || []} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-            <XAxis type="number" stroke="#94A3B8" fontSize={11} />
-            <YAxis dataKey="status" type="category" stroke="#94A3B8" fontSize={11} width={100} />
+            <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+            <XAxis type="number" stroke={chart.axis} fontSize={11} />
+            <YAxis dataKey="status" type="category" stroke={chart.axis} fontSize={11} width={100} />
             <Tooltip formatter={(v, _n, p) => [`${v} (${p.payload.pct}%)`, "Leads"]} />
-            <Bar dataKey="count" fill="#0B1B3D" radius={[0, 4, 4, 0]} />
+            <Bar dataKey="count" fill={chart.brand} radius={[0, 4, 4, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </Panel>
@@ -291,6 +306,7 @@ function OwnerDashboard() {
 
 function SalespersonDashboard() {
   const { user } = useAuth();
+  const chart = useChartTheme();
   const [range, setRange] = useState("month");
   const [data, setData] = useState(null);
 
@@ -342,15 +358,15 @@ function SalespersonDashboard() {
             <AreaChart data={data?.revenue_trend || []}>
               <defs>
                 <linearGradient id="myRevGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#0B1B3D" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#0B1B3D" stopOpacity={0} />
+                  <stop offset="5%" stopColor={chart.brand} stopOpacity={0.25} />
+                  <stop offset="95%" stopColor={chart.brand} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-              <XAxis dataKey="month" stroke="#94A3B8" fontSize={11} />
-              <YAxis stroke="#94A3B8" fontSize={11} tickFormatter={(v) => formatINR(v, { decimals: 0 })} />
-              <Tooltip formatter={(v) => formatINR(v)} contentStyle={{ background: "#0B1B3D", border: "none", color: "white", borderRadius: 6 }} labelStyle={{ color: "white" }} />
-              <Area type="monotone" dataKey="revenue" stroke="#0B1B3D" fill="url(#myRevGrad)" strokeWidth={2.5} />
+              <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+              <XAxis dataKey="month" stroke={chart.axis} fontSize={11} />
+              <YAxis stroke={chart.axis} fontSize={11} tickFormatter={(v) => formatINR(v, { decimals: 0 })} />
+              <Tooltip formatter={(v) => formatINR(v)} contentStyle={{ background: chart.tooltipBg, border: "none", color: "white", borderRadius: 6 }} labelStyle={{ color: "white" }} />
+              <Area type="monotone" dataKey="revenue" stroke={chart.brand} fill="url(#myRevGrad)" strokeWidth={2.5} />
             </AreaChart>
           </ResponsiveContainer>
         </Panel>
@@ -358,9 +374,9 @@ function SalespersonDashboard() {
         <Panel eyebrow="Stages" title="My pipeline">
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={data?.my_pipeline || []} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-              <XAxis type="number" stroke="#94A3B8" fontSize={10} />
-              <YAxis dataKey="status" type="category" stroke="#94A3B8" fontSize={10} width={90} />
+              <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+              <XAxis type="number" stroke={chart.axis} fontSize={10} />
+              <YAxis dataKey="status" type="category" stroke={chart.axis} fontSize={10} width={90} />
               <Tooltip />
               <Bar dataKey="count" radius={[0, 4, 4, 0]}>
                 {(data?.my_pipeline || []).map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}

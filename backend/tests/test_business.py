@@ -180,3 +180,43 @@ class TestLeadConvertAndBulk:
         for lid in ids:
             lead = owner_client.get(f"{API}/leads/{lid}", timeout=15).json()
             assert lead["status"] == "Contacted"
+
+
+class TestProfile:
+    def test_get_and_update_own_profile(self, sales1_client):
+        me = sales1_client.get(f"{API}/auth/me", timeout=15).json()
+        original_phone = me["phone"]
+        r = sales1_client.put(f"{API}/auth/me", json={"phone": "+91 90000 99999"}, timeout=15)
+        assert r.status_code == 200, r.text
+        assert r.json()["phone"] == "+91 90000 99999"
+        # restore
+        sales1_client.put(f"{API}/auth/me", json={"phone": original_phone}, timeout=15)
+
+    def test_salesperson_cannot_use_employee_patch_on_self(self, sales1_client, sales1_id):
+        # /employees/{id} PATCH is admin/manager only — a salesperson must use /auth/me instead
+        r = sales1_client.put(f"{API}/employees/{sales1_id}", json={"name": "Hacked"}, timeout=15)
+        assert r.status_code == 403
+
+    def test_change_password_wrong_current_rejected(self, sales1_client):
+        r = sales1_client.post(f"{API}/auth/change-password", json={
+            "current_password": "wrong-password", "new_password": "newpass123",
+        }, timeout=15)
+        assert r.status_code == 400
+
+    def test_change_password_roundtrip(self):
+        # Use a fresh session so we don't disturb the shared sales1 fixture's password
+        login = requests.post(f"{API}/auth/login", json=SALES1, timeout=15).json()
+        s = requests.Session()
+        s.headers.update({"Authorization": f"Bearer {login['token']}"})
+        r = s.post(f"{API}/auth/change-password", json={
+            "current_password": "password123", "new_password": "temppass456",
+        }, timeout=15)
+        assert r.status_code == 200
+        relogin = requests.post(f"{API}/auth/login", json={"email": SALES1["email"], "password": "temppass456"}, timeout=15)
+        assert relogin.status_code == 200
+        # restore original password
+        s2 = requests.Session()
+        s2.headers.update({"Authorization": f"Bearer {relogin.json()['token']}"})
+        s2.post(f"{API}/auth/change-password", json={
+            "current_password": "temppass456", "new_password": "password123",
+        }, timeout=15)

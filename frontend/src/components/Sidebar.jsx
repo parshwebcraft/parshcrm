@@ -38,7 +38,7 @@ export default function Sidebar() {
   const items = NAV.filter((item) => !item.ownerOnly || isOwner);
 
   return (
-    <aside className="desktop-only fixed left-0 top-0 z-40 h-screen w-64 bg-[#0B1B3D] text-white">
+    <aside className="sidebar-shell desktop-only fixed left-0 top-0 z-40 h-screen w-64 bg-[#0B1B3D] text-white">
       <div className="flex h-14 items-center gap-2 border-b border-white/10 px-5">
         <div className="grid h-8 w-8 place-items-center rounded-md bg-white text-[#0B1B3D] font-display font-black">
           P

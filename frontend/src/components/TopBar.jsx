@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MagnifyingGlass, Bell, SignOut } from "@phosphor-icons/react";
+import { MagnifyingGlass, Bell, SignOut, UserCircle } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth";
 import { api } from "@/lib/api";
 import { initials, relTime, ROLE_LABELS } from "@/lib/constants";
@@ -165,6 +165,13 @@ export default function TopBar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                data-testid="my-profile-btn"
+                onClick={() => nav("/profile")}
+              >
+                <UserCircle size={16} className="mr-2" /> My Profile
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 data-testid="logout-btn"

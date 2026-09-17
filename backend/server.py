@@ -77,6 +77,17 @@ class LoginOut(BaseModel):
     user: UserOut
 
 
+class ProfilePatch(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    avatar: Optional[str] = None
+
+
+class PasswordChangeIn(BaseModel):
+    current_password: str
+    new_password: str
+
+
 class LeadIn(BaseModel):
     name: str
     phone: str = ""
@@ -365,6 +376,34 @@ async def me(user: dict = Depends(get_current_user)):
         "phone": user.get("phone", ""),
         "avatar": user.get("avatar", ""),
     }
+
+
+@api.put("/auth/me", response_model=UserOut)
+async def update_me(payload: ProfilePatch, user: dict = Depends(get_current_user)):
+    """Self-service profile edit — any authenticated user may update their own
+    name/phone/avatar without needing the admin/manager role that /employees/{id} requires."""
+    updates = {k: v for k, v in payload.model_dump(exclude_unset=True).items() if v is not None}
+    if updates:
+        await db.users.update_one({"id": user["id"]}, {"$set": updates})
+    return {
+        "id": user["id"],
+        "email": user["email"],
+        "name": updates.get("name", user["name"]),
+        "role": user["role"],
+        "phone": updates.get("phone", user.get("phone", "")),
+        "avatar": updates.get("avatar", user.get("avatar", "")),
+    }
+
+
+@api.post("/auth/change-password")
+async def change_password(payload: PasswordChangeIn, user: dict = Depends(get_current_user)):
+    full_user = await db.users.find_one({"id": user["id"]})
+    if not verify_password(payload.current_password, full_user.get("password_hash", "")):
+        raise HTTPException(400, "Current password is incorrect")
+    if len(payload.new_password) < 6:
+        raise HTTPException(400, "New password must be at least 6 characters")
+    await db.users.update_one({"id": user["id"]}, {"$set": {"password_hash": hash_password(payload.new_password)}})
+    return {"ok": True}
 
 
 # -------------------------------------------------------------------------
